@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1> This is the current NextFilms catalogue </h1>
+{% if movies|length > 0 %}
+<table class="table table-striped">
+{% for movie in movies %}
+    <tr><th>{{movie}}</th></tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

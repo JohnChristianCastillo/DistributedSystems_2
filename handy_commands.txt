@@ -1,0 +1,11 @@
+# to show all containers
+docker ps -a
+
+docker stop (name)
+
+docker remove (name)
+
+# to show all images
+docker images
+
+docker rmi (image_name)
