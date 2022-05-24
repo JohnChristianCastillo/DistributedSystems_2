@@ -2,22 +2,31 @@ version: "3.7"
 services:
   client:
     # where is the docker file
-    image: my-app
-    command: python -m gunicorn --bind 0.0.0.0:5000 -w 3 flaskdirectory.run:app
+    build: client
+    restart: always
+    command: python -m gunicorn --bind 0.0.0.0:5000 -w 3 project.app:app
     ports:
       - 5000:5000
     environment:
       - DEBUG=0
-    # create inner networks so applications know how to connect to each other
     networks:
-      - flask_network
+      - DS_project
     expose:
       - 5000
     depends_on:
-      - migration
-
+      - user
   user:
-    image:
+    build: users
+    #restart: always
+    command: python -m gunicorn --bind 0.0.0.0:5001 -w 3 project.app:app
+    ports:
+      - 5001:5001
+    networks:
+          - DS_project
+
+    depends_on:
+          - user-db
+
   user-db: # production database
     image: postgres:13
     restart: always
@@ -25,17 +34,16 @@ services:
       # map container port to local port of computer
       - 5432:5432
     networks:
-      - flask_network
+      - DS_project
     environment:
       - POSTGRES_USER=app
       - POSTGRES_PASSWORD=0
-      - POSTGRES_DB=ml_game # this matches with market.db
+      - POSTGRES_DB=usersDB # this matches with
     # to maintain info for a long time, now if you exit you will lose all info
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
 # specify network that this compose file should use
 networks:
-  flask_network:
+  DS_project:
 volumes:
   postgres_data:
