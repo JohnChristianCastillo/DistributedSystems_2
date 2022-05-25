@@ -11,19 +11,20 @@ services:
       - DEBUG=0
     networks:
       - DS_project
-    expose:
-      - 5000
     depends_on:
       - user
   user:
     build: users
     #restart: always
-    command: python -m gunicorn --bind 0.0.0.0:5001 -w 3 project.app:app
+    command: python -m flask run --host 0.0.0.0
+    environment:
+      - PYTHONBUFFERED=1
+      - FLASK_APP=project.app
     ports:
-      - 5001:5001
+      - 5001:5000
     networks:
           - DS_project
-
+          - User_network
     depends_on:
           - user-db
 
@@ -34,16 +35,18 @@ services:
       # map container port to local port of computer
       - 5432:5432
     networks:
-      - DS_project
+      - User_network
     environment:
-      - POSTGRES_USER=app
-      - POSTGRES_PASSWORD=0
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=usersDB # this matches with
     # to maintain info for a long time, now if you exit you will lose all info
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      #- users_data:/var/lib/postgresql/data
+      - ./users/project/db:/docker-entrypoint-initdb.d
 # specify network that this compose file should use
 networks:
   DS_project:
+  User_network:
 volumes:
-  postgres_data:
+  users_data:

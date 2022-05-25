@@ -16,6 +16,8 @@ docker images
 # remove all images
 docker system prune -a
 
+docker prune volume -a
+
 # explore image
 docker run --rm -it --entrypoint=/bin/bash name-of-image
 

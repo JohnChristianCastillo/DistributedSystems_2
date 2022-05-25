@@ -56,18 +56,31 @@ def actual_login():
     # microservice returns True if correct combination, False if otherwise.
     # ================================
 
-    data = {'username':req_username, 'password':req_password}
+    success = False
+    import json
+    url = "http://user:5000/api/login"
+    payload = json.dumps({
+        "username": req_username,
+        "password": req_password
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
 
-    success = None
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    if response.status_code == 200:
+        success = True
 
     save_to_session('success', success)
+
     if success:
         global username, password
-
         username = req_username
         password = req_password
-
-    return redirect('/login')
+        return redirect("/")
+    else:
+        return redirect('/login')
 
 @app.route("/register")
 def register_page():
