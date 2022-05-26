@@ -80,10 +80,12 @@ def actual_login():
         redirect('/')
     return redirect('/login')
 
+
 @app.route("/register")
 def register_page():
     success = load_from_session('success')
     return render_template('register.html', username=username, password=password, success=success)
+
 
 @app.route("/register", methods=['POST'])
 def actual_register():
@@ -99,7 +101,6 @@ def actual_register():
 
     success = None
     url = "http://user:5000/api/register"
-
     payload = json.dumps({
         "username": str(req_username).lower(),
         "password": str(req_password)
@@ -141,10 +142,19 @@ def add_friend():
     # microservice returns True if the friend request is successful (the friend exists & is not already friends), False if otherwise
     # ==============================
 
-
-    data = {'username': username}
-
     success = None
+    url = "http://user:5000/api/addFriend"
+    payload = json.dumps({
+        "username": str(username).lower(),
+        "friend_username": str(friend_username).lower()
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    if response.status_code == 200:
+        success = True
 
     save_to_session('success', success)
 
