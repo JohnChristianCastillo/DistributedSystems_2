@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request, url_for
 import requests
+import json
 
 app = Flask(__name__)
 
@@ -55,13 +56,11 @@ def actual_login():
     # send the username and password to the microservice
     # microservice returns True if correct combination, False if otherwise.
     # ================================
-
-    success = False
-    import json
+    success = None
     url = "http://user:5000/api/login"
     payload = json.dumps({
-        "username": req_username,
-        "password": req_password
+        "username": str(req_username).lower(),
+        "password": str(req_password)
     })
     headers = {
         'Content-Type': 'application/json'
@@ -78,9 +77,8 @@ def actual_login():
         global username, password
         username = req_username
         password = req_password
-        return redirect("/")
-    else:
-        return redirect('/login')
+        redirect('/')
+    return redirect('/login')
 
 @app.route("/register")
 def register_page():
@@ -99,9 +97,20 @@ def actual_register():
     # microservice returns True if username is available, False if otherwise.
     # ================================
 
-    data = {'username': req_username, 'password': req_password}
-
     success = None
+    url = "http://user:5000/api/register"
+
+    payload = json.dumps({
+        "username": str(req_username).lower(),
+        "password": str(req_password)
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    if response.status_code == 200:
+        success = True
 
     save_to_session('success', success)
 
@@ -110,6 +119,7 @@ def actual_register():
 
         username = req_username
         password = req_password
+        redirect('/login')
 
     return redirect('/register')
 

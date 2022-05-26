@@ -1,3 +1,5 @@
+sudo fuser -k 5432/tcp
+
 # to show all containers
 docker ps -a
 
@@ -22,23 +24,4 @@ docker prune volume -a
 docker run --rm -it --entrypoint=/bin/bash name-of-image
 
 
-
-    depends_on:
-      - user-db
-
-  user-db: # production database
-    image: postgres:13
-    restart: always
-    ports: # default postgres by default == 5432
-      # map container port to local port of computer
-      - 5432:5432
-    networks:
-      - DS_project
-    environment:
-      - POSTGRES_USER=app
-      - POSTGRES_PASSWORD=0
-      - POSTGRES_DB=usersDB # this matches with
-    # to maintain info for a long time, now if you exit you will lose all info
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 

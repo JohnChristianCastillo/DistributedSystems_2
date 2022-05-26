@@ -1,3 +1,4 @@
+
 CREATE TABLE users(
     user_name VARCHAR,
     user_password VARCHAR,
