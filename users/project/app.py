@@ -13,4 +13,4 @@ api.add_resource(AddFriend, '/api/addFriend')
 
 @app.route("/")
 def hello():
-    return "Hi there!"
+    return "This is the 'users' microservice"

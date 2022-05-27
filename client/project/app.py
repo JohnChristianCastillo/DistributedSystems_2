@@ -77,7 +77,6 @@ def actual_login():
         global username, password
         username = req_username
         password = req_password
-        redirect('/')
     return redirect('/login')
 
 
@@ -160,12 +159,14 @@ def add_friend():
 
     return redirect('/friends')
 
+
 @app.route("/groups")
 def groups():
 
     create_success = load_from_session('create_success')
     add_success = load_from_session('add_success')
     return render_template('groups.html', username=username, password=password, create_success=create_success, add_success=add_success)
+
 
 @app.route('/create_group', methods=['POST'])
 def create_group():
@@ -179,9 +180,19 @@ def create_group():
 
     groupname = request.form['groupname']
 
-    data = {'username':username}
-
     success = None
+    url = "http://group:5000/api/createGroup"
+    payload = json.dumps({
+        "owner_username": str(username).lower(),
+        "group_name": str(groupname).lower()
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    if response.status_code == 200:
+        success = True
 
     save_to_session('create_success', success)
 
@@ -199,9 +210,20 @@ def add_friend_to_group():
     # ==============================
     groupname, friend_username = request.form['groupname'], request.form['friendname']
 
-    data = {'username': username}
-
     success = None
+    url = "http://group:5000/api/addFriendToGroup"
+    payload = json.dumps({
+        "owner_username": str(username).lower(),
+        "friend_username": str(friend_username).lower(),
+        "group_name": str(groupname).lower()
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    if response.status_code == 200:
+        success = True
 
     save_to_session('add_success', success)
     return redirect('/groups')

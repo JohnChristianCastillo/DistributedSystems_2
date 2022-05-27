@@ -72,7 +72,7 @@ class Register(Resource):
                            (passedUserName, passedPassword))
             connection.commit()
             connection.close()
-            return {"200 OK": "Registered successfully"}, 200  # unauthorized
+            return {"200 OK": "Registered successfully"}, 200
 
 
 class AddFriend(Resource):
@@ -112,5 +112,5 @@ class AddFriend(Resource):
                            (passedUserName, passedFriendUserName))
             connection.commit()
             connection.close()
-            return {"200 OK": "Befriended succesfully"}, 200  # unauthorized
+            return {"200 OK": "Befriended succesfully"}, 200
 
