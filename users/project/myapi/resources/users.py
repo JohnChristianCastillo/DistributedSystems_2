@@ -111,7 +111,10 @@ class AddFriend(Resource):
 
         passedUserName = args['username']
         passedFriendUserName = args['friend_username']
-
+        
+        # check if user is adding him/herself
+        if passedUserName == passedFriendUserName:
+            return {"409 Conflict": "You can't add yourself as a friend"}, 409
         connection = psycopg2.connect("dbname= 'usersDB' user='admin' host='user-db' password='admin'")
         cursor = connection.cursor()
 
