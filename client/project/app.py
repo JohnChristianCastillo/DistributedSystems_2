@@ -36,8 +36,9 @@ def catalogue():
     # microservice returns a (python) list of movie strings
     # ================================
 
-    movies = []
-
+    url = "http://movie:5000/api/getMovies"
+    response = requests.request("GET", url)
+    movies = response.json()["movies"]
     return render_template('catalogue.html', username=username, password=password, movies=movies)
 
 @app.route("/login")
@@ -70,6 +71,8 @@ def actual_login():
 
     if response.status_code == 200:
         success = True
+    else:
+        success = False
 
     save_to_session('success', success)
 
@@ -111,7 +114,8 @@ def actual_register():
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code == 200:
         success = True
-
+    else:
+        success = False
     save_to_session('success', success)
 
     if success:
@@ -154,7 +158,8 @@ def add_friend():
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code == 200:
         success = True
-
+    else:
+        success = False
     save_to_session('success', success)
 
     return redirect('/friends')
@@ -193,7 +198,8 @@ def create_group():
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code == 200:
         success = True
-
+    else:
+        success = False
     save_to_session('create_success', success)
 
     return redirect('/groups')
@@ -224,7 +230,8 @@ def add_friend_to_group():
     response = requests.request("POST", url, headers=headers, data=payload)
     if response.status_code == 200:
         success = True
-
+    else:
+        success = False
     save_to_session('add_success', success)
     return redirect('/groups')
 

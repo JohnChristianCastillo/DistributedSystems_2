@@ -7,16 +7,16 @@ import json
 class Login(Resource):
     def get(self):
         """
-        Get all users
-        """
+                Get all users
+                """
         one = False
         connection = psycopg2.connect("dbname= 'usersDB' user='admin' host='user-db' password='admin'")
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM users")
         row = cursor.fetchall()
-        d:dict() = {}
+        d: dict() = {}
         for item in row:
-            d[item[0]] = item[1]
+            d[f"username: {item[0]}"] = f"password:  {item[1]}"
         return d
 
     def post(self):
@@ -45,7 +45,18 @@ class Login(Resource):
 
 class Register(Resource):
     def get(self):
-        pass
+        """
+                Get all users
+                """
+        one = False
+        connection = psycopg2.connect("dbname= 'usersDB' user='admin' host='user-db' password='admin'")
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users")
+        row = cursor.fetchall()
+        d: dict() = {}
+        for item in row:
+            d[f"username: {item[0]}"] = f"password:  {item[1]}"
+        return d
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -77,7 +88,19 @@ class Register(Resource):
 
 class AddFriend(Resource):
     def get(self):
-        pass
+        """
+                Get all users
+                """
+        one = False
+        connection = psycopg2.connect("dbname= 'usersDB' user='admin' host='user-db' password='admin'")
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM friends")
+        row = cursor.fetchall()
+        d: dict() = {}
+        for item in row:
+            d.setdefault(f"{item[0]} is friends with", []).append((item[1]))
+
+        return d
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -114,3 +137,34 @@ class AddFriend(Resource):
             connection.close()
             return {"200 OK": "Befriended succesfully"}, 200
 
+class UserBefriended(Resource):
+    def get(self):
+        """
+                Get all users
+                """
+        parser = reqparse.RequestParser()
+        parser.add_argument('username', type=str, help="Invalid username")
+        parser.add_argument('friend_username', type=str, help="Invalid username")
+
+        args = parser.parse_args()
+        passedUserName = args['username']
+        passedFriendUserName = args['friend_username']
+
+        one = False
+        connection = psycopg2.connect("dbname= 'usersDB' user='admin' host='user-db' password='admin'")
+        cursor = connection.cursor()
+
+        # check first if user exists
+        cursor.execute("SELECT * FROM users WHERE user_name=%s", (passedFriendUserName,))
+        row = cursor.fetchall()
+        if not row:
+            connection.close()
+            return {"404 Not Found": "user to be befriended does not exist"}, 404
+
+        # Check if already friends
+        cursor.execute("SELECT * FROM friends WHERE user_name = %s AND friend_name = %s",
+                       (passedUserName, passedFriendUserName))
+        row = cursor.fetchall()
+        if len(row) == 0:
+            connection.close()
+            return {"401 Unauthorized": "user is not your friend"}, 401

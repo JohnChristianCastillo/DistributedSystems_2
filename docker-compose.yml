@@ -79,11 +79,45 @@ services:
     volumes:
       #- groups_data:/var/lib/postgresql/data
       - ./groups/project/db:/docker-entrypoint-initdb.d
+
+  movie:
+    build: movies
+    #restart: always
+    command: python -m flask run --host 0.0.0.0
+    environment:
+      - PYTHONBUFFERED=1
+      - FLASK_APP=project.app
+    ports:
+      - 5003:5000
+    networks:
+      - DS_project
+      - Movie_network
+    depends_on:
+      - movie-db
+
+  movie-db: # production database
+    image: postgres:13
+    restart: always
+    ports: # default postgres by default == 5432
+      # map container port to local port of computer
+      - 5434:5432
+    networks:
+      - Movie_network
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=moviesDB # this matches with
+    # to maintain info for a long time, now if you exit you will lose all info
+    volumes:
+      #- movies_data:/var/lib/postgresql/data
+      - ./movies/project/db:/docker-entrypoint-initdb.d
 # specify network that this compose file should use
 networks:
   DS_project:
   User_network:
   Group_network:
+  Movie_network:
 volumes:
   users_data:
   groups_data:
+  movies_data:
