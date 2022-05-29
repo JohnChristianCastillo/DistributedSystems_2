@@ -95,7 +95,7 @@ class AddFriendToGroup(Resource):
 
         if response.status_code != 200:
             return {f"{response.status_code}":
-                    f"Either your friend is not registered or you are not friends"}, response.status_code
+                    f"Either your friend is not registered or you are not friends"}, 401
 
         connection = psycopg2.connect("dbname= 'groupsDB' user='admin' host='group-db' password='admin'")
         cursor = connection.cursor()

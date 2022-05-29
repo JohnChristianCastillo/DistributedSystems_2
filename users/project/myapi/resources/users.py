@@ -171,3 +171,5 @@ class UserBefriended(Resource):
         if len(row) == 0:
             connection.close()
             return {"401 Unauthorized": "user is not your friend"}, 401
+
+        return {"200 OK": "user is your friend"}, 200

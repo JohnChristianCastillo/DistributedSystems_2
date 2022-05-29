@@ -36,7 +36,7 @@ def catalogue():
     # microservice returns a (python) list of movie strings
     # ================================
 
-    url = "http://movie:5000/api/getMovies"
+    url = "http://movie:5000/api/movies"
     response = requests.request("GET", url)
     movies = response.json()["movies"]
     return render_template('catalogue.html', username=username, password=password, movies=movies)
